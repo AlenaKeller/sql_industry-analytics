@@ -1,0 +1,43 @@
+--industry analytics (example for 2024)
+SELECT 
+    company_name AS 'Company Name',
+    city AS 'City',
+    net_assets AS 'Net Assets',
+    
+    -- Profit by year
+    profit_2021 AS 'Profit 2021',
+    profit_2022 AS 'Profit 2022', 
+    profit_2023 AS 'Profit 2023',
+    
+    -- Revenue by year
+    revenue_2021 AS 'Revenue 2021',
+    revenue_2022 AS 'Revenue 2022',
+    revenue_2023 AS 'Revenue 2023',
+    
+    -- 3-year average profit (window function)
+    AVG((profit_2021 + profit_2022 + profit_2023)/3) OVER() AS 'Overall Average Profit',
+    
+    -- City-specific average profit (PARTITION window function)
+    AVG((profit_2021 + profit_2022 + profit_2023)/3) OVER(PARTITION BY city) AS 'City Average Profit',
+    
+    -- Net assets ranking within city
+    RANK() OVER(PARTITION BY city ORDER BY net_assets DESC) AS 'City Assets Rank',
+    
+    -- Revenue growth 2021-2022
+    revenue_2022 - revenue_2021 AS 'Revenue Growth 2021-2022',
+    
+    -- Revenue growth 2022-2023
+    revenue_2023 - revenue_2022 AS 'Revenue Growth 2022-2023',
+    
+    -- Total 3-year revenue growth
+    revenue_2023 - revenue_2021 AS 'Total Revenue Growth 2021-2023',
+    
+    -- Profit growth percentage 2021-2023
+    ROUND((profit_2023 - profit_2021) / ABS(profit_2021) * 100, 2) AS 'Profit Growth % 2021-2023'
+FROM 
+    companies_financials
+WHERE 
+    net_assets > 0  -- Only companies with positive net assets
+ORDER BY 
+    city, 
+    net_assets DESC;
