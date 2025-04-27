@@ -1,0 +1,14 @@
+-- top 5 Companies by Profit in Each City
+WITH ranked_companies AS (
+    SELECT 
+        company_name,
+        city,
+        (profit_2021 + profit_2022 + profit_2023) / 3 AS avg_profit,
+        RANK() OVER(PARTITION BY city ORDER BY (profit_2021 + profit_2022 + profit_2023) / 3 DESC) AS profit_rank
+    FROM 
+        companies_financials
+)
+SELECT * 
+FROM ranked_companies
+WHERE profit_rank <= 5
+ORDER BY city, profit_rank;
