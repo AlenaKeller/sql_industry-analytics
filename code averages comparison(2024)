@@ -1,0 +1,15 @@
+-- company vs code Averages Comparison
+SELECT 
+    company_name,
+    code,
+    net_assets,
+    (profit_2021 + profit_2022 + profit_2023) / 3 AS company_avg_profit,
+    AVG((profit_2021 + profit_2022 + profit_2023) / 3) OVER(PARTITION BY code) AS code_avg_profit,
+    (profit_2021 + profit_2022 + profit_2023) / 3 - 
+        AVG((profit_2021 + profit_2022 + profit_2023) / 3) OVER(PARTITION BY code) AS diff_from_code_avg,
+    (revenue_2021 + revenue_2022 + revenue_2023) / 3 AS company_avg_revenue,
+    AVG((revenue_2021 + revenue_2022 + revenue_2023) / 3) OVER(PARTITION BY code) AS code_avg_revenue
+FROM 
+    companies_financials
+ORDER BY 
+    diff_from_city_avg DESC;
