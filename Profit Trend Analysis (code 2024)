@@ -1,0 +1,19 @@
+SELECT 
+    company_name,
+    code,
+    profit_2021,
+    profit_2022,
+    profit_2023,
+    profit_2022 - profit_2021 AS profit_growth_21_22,
+    profit_2023 - profit_2022 AS profit_growth_22_23,
+    AVG(profit_2023 - profit_2021) OVER(PARTITION BY code) AS avg_code_profit_growth,
+    RANK() OVER(ORDER BY (profit_2023 - profit_2021) DESC) AS overall_growth_rank,
+    RANK() OVER(PARTITION BY code ORDER BY (profit_2023 - profit_2021) DESC) AS code_growth_rank
+FROM 
+    companies_financials
+WHERE 
+    profit_2021 IS NOT NULL 
+    AND profit_2022 IS NOT NULL 
+    AND profit_2023 IS NOT NULL
+ORDER BY 
+    (profit_2023 - profit_2021) DESC;
